@@ -117,3 +117,8 @@ from world
 where population > 10000000
 group by continent
 
+--DOESN'T WORK
+--select continent, sum(population)
+from world
+group by continent
+having population > 100000000
