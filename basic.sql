@@ -6,6 +6,7 @@ SELECT name, population FROM world
 SELECT name, area FROM world
   WHERE area BETWEEN 200000 AND 250000
 
+--
 -- Pattern Matching Queries
 -- LIKE operator to check names. The % is a wild-card it can match any characters
 SELECT name FROM world
@@ -69,3 +70,5 @@ SELECT name FROM world
 WHERE name LIKE '%a%' AND name LIKE '%e%' AND name LIKE '%i%'  AND name LIKE '%o%' AND name LIKE '%u%'  AND name NOT LIKE '% %'
 
 
+--
+-- Nested Statements
