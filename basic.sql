@@ -24,3 +24,30 @@ ORDER BY name
 -- Find the countries that have two "o" characters separated by two others.
 SELECT name FROM world  
  WHERE name LIKE '%o__o%'
+
+-- Find the country where the capital is the country plus "City".
+-- concat(name, ' City')
+SELECT name
+  FROM world
+ WHERE capital LIKE concat(name, ' City')
+ 
+--Find the capital and the name where the capital includes the name of the country.
+--	capital             name
+-- Andorra la Vella   	Andorra
+select capital, name
+from world
+where capital like '%'+name+'%'
+
+--Find the capital and the name where the capital is an extension of name of the country.
+--You should include Mexico City as it is longer than Mexico. You should not include Luxembourg as the capital is the same as the country.
+select capital, name
+from world
+where capital like name+'%' and len(capital) > len(name)
+
+
+--Show the name and the extension where the capital is an extension of name of the country.
+--For Monaco-Ville the name is Monaco and the extension is -Ville.
+--REPLACE(f, s1, s2) returns the string f with all occurances of s1 replaced with s2.
+select name, replace(capital, name, '') as 'extension'
+from world
+where capital like name+'%' and len(capital) > len(name)
