@@ -6,7 +6,7 @@ SELECT name, population FROM world
 SELECT name, area FROM world
   WHERE area BETWEEN 200000 AND 250000
 
---
+------------------------------------------------------------------------------------------------
 -- Pattern Matching Queries
 -- LIKE operator to check names. The % is a wild-card it can match any characters
 SELECT name FROM world
@@ -71,11 +71,11 @@ WHERE name LIKE '%a%' AND name LIKE '%e%' AND name LIKE '%i%'  AND name LIKE '%o
 
 
 --
---
+------------------------------------------------------------------------------------------------
 -- Nested Statements
 
 
---
+------------------------------------------------------------------------------------------------
 --Aggregate functions: COUNT, SUM and AVG
 --It takes many values and returns one.
 --What is the total population of ('Estonia', 'Latvia', 'Lithuania')?
@@ -117,8 +117,69 @@ from world
 where population > 10000000
 group by continent
 
---DOESN'T WORK
---select continent, sum(population)
+--List the continents that have a total population of at least 100 million.
+select continent--, sum(population)
 from world
 group by continent
-having population > 100000000
+having sum(population) > 100000000
+
+
+
+
+
+------------------------------------------------------------------------------------------------
+--The JOIN operation
+SELECT *
+  FROM game JOIN goal ON (id=matchid) -- to be more specific ON (game.id=goal.matchid)
+
+--Show the player, teamid, stadium and mdate for every German goal.
+SELECT player, teamid, stadium, mdate
+  FROM game JOIN goal ON (id=matchid)
+  WHERE teamid = 'GER'
+  
+--List the player for every goal scored in a game where the stadium was 'National Stadium, Warsaw'
+SELECT player
+FROM goal JOIN game ON (game.id = goal.matchid)
+WHERE stadium =  'National Stadium, Warsaw'
+
+--Show the name of all players who scored a goal against Germany.
+SELECT DISTINCT(player) --DISTINCT to stop players being listed twice.
+  FROM game JOIN goal ON matchid = id 
+    WHERE (team1='GER' or team2='GER') 
+    and (teamid != 'GER') --teamid!='GER' to prevent listing German players.
+    
+ --Show teamname and the total number of goals scored.
+SELECT teamname, COUNT(player)
+  FROM eteam JOIN goal ON id=teamid
+ GROUP BY teamname
+ ORDER BY teamname
+
+--Show the stadium and the number of goals scored in each stadium.
+SELECT stadium, count(player)
+FROM game JOIN goal ON matchid=id
+GROUP BY stadium
+
+--For every match involving 'POL', show the matchid, date and the number of goals scored.
+SELECT matchid, mdate, count(teamid)
+  FROM game JOIN goal ON matchid = id 
+ WHERE (team1 = 'POL' OR team2 = 'POL')
+GROUP BY matchid, mdate
+
+--For every match where 'GER' scored, show matchid, match date and the number of goals scored by 'GER'
+SELECT matchid, mdate, count(player)
+FROM goal JOIN game ON (id=matchid)
+WHERE teamid = 'GER'
+GROUP BY matchid, mdate
+
+--"CASE WHEN"
+--List every match with the goals scored by each team
+--Notice in the query given every goal is listed. If it was a team1 goal then a 1 appears in score1, otherwise there is a 0. 
+--You could SUM this column to get a count of the goals scored by team1. Sort your result by mdate, matchid, team1 and team2.
+SELECT  mdate,
+  team1,
+  SUM(CASE WHEN teamid=team1 THEN 1 ELSE 0 END) as score1, 
+  team2,
+  SUM(CASE WHEN teamid=team2 THEN 1 ELSE 0 END) as score2
+  FROM game JOIN goal ON matchid = id
+ GROUP BY mdate, matchid, team1, team2
+ ORDER BY mdate, matchid, team1, team2
