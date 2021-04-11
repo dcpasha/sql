@@ -183,3 +183,9 @@ SELECT  mdate,
   FROM game JOIN goal ON matchid = id
  GROUP BY mdate, matchid, team1, team2
  ORDER BY mdate, matchid, team1, team2
+
+--Cast list for Casablanca
+SELECT name
+FROM casting JOIN  movie ON id=movieid 
+JOIN actor ON actorid = actor.id
+where  title = 'Casablanca' 
