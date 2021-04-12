@@ -205,12 +205,41 @@ WHERE name='Doris Day'
 GROUP BY yr
 HAVING COUNT(title) > 1
 
---DO #12. DO #12. DO #12. DO #12. DO #12. DO #12. DO #12. 
---https://www.youtube.com/watch?v=BcNIDK5qYx8&t=1s
-SELECT movieid FROM casting
-WHERE actorid IN (
-  SELECT id FROM actor
-  WHERE name='Julie Andrews')
----^^^^
+--List the film title and the leading actor for all of the films 'Julie Andrews' played in.
+SELECT title, name
+FROM movie
+JOIN casting ON (movie.id = movieid)
+JOIN actor ON (actor.id = actorid)
+WHERE movieid in (
+SELECT movieid FROM casting  -- Movie where  ‘Julie Andrews' played
+WHERE actorid IN   (
+  SELECT id FROM actor -- Id of ‘Julie Andrews'
+  WHERE name='Julie Andrews')) AND ord=1
+
+  
+--Obtain a list, in alphabetical order, of actors who've had at least 15 starring roles.
+SELECT name
+FROM movie
+JOIN casting ON (movie.id=movieid)
+JOIN actor ON (actor.id=actorid)
+WHERE ord=1
+GROUP BY name
+HAVING SUM(ord)>14
+ORDER BY name ASC
+  
+--List the films released in the year 1978 ordered by the number of actors in the cast, then by title.
+SELECT title, count(actorid)
+FROM movie 
+JOIN casting ON (movieid=movie.id)
+JOIN actor ON (actor.id=actorid)
+WHERE yr=1978
+GROUP BY title
+ORDER BY count(actorid) DESC,  title
+ 
+
+  
+  
+  
+
 
 
