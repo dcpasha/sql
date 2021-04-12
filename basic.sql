@@ -236,9 +236,14 @@ WHERE yr=1978
 GROUP BY title
 ORDER BY count(actorid) DESC,  title
  
-
-  
-  
+--List all the people who have worked with 'Art Garfunkel'.  
+SELECT DISTINCT(name) FROM casting -- A distinct list of people who played in those movies.
+JOIN actor ON (actorid=actor.id)
+WHERE movieid IN (
+SELECT movieid FROM casting  -- Find movies where he played
+JOIN actor on actor.id=casting.actorid
+where name = 'Art Garfunkel') 
+  AND name != 'Art Garfunkel'  -- Exclude himself from the list of people who worked with him
   
 
 
