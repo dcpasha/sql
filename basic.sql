@@ -128,7 +128,7 @@ having sum(population) > 100000000
 
 
 ------------------------------------------------------------------------------------------------
---The JOIN operation
+--The (INNER) JOIN operation
 SELECT *
   FROM game JOIN goal ON (id=matchid) -- to be more specific ON (game.id=goal.matchid)
 
@@ -245,6 +245,59 @@ JOIN actor on actor.id=casting.actorid
 where name = 'Art Garfunkel') 
   AND name != 'Art Garfunkel'  -- Exclude himself from the list of people who worked with him
   
+  
+------------------------------------------------------------------------------------------------
+--Selecting NULL values.
+--NULL values are given in tables, this might be because the data is unknown or is inappropriate.
+--List the teachers who have NULL for their department.
+SELECT NAME FROM TEACHER
+WHERE DEPT IS NULL
+  
+--(INNER) JOIN misses the teachers with no department and the departments with no teacher.
+SELECT teacher.name, dept.name
+FROM teacher INNER JOIN dept
+  
+--LEFT (OUTER) JOIN to list all teacher whether or not they have a department(dept) or not.
+ SELECT teacher.name, dept.name
+ FROM teacher LEFT JOIN dept
+           ON (teacher.dept=dept.id)
 
 
+--RIGHT (OUTER) JOIN to list all departments.
+  SELECT teacher.name, dept.name
+ FROM teacher RIGHT JOIN dept
+           ON (teacher.dept=dept.id)
 
+--COALESCE takes any number of arguments and returns the first value that is not null.
+--COALESCE(x,y,z) = x if x is not NULL
+--COALESCE(x,y,z) = y if x is NULL and y is not NULL
+--COALESCE(x,y,z) = z if x and y are NULL but z is not NULL
+--COALESCE(x,y,z) = NULL if x and y and z are all NULL
+
+ -- Show teacher name and mobile number or '07986 444 2266
+ SELECT name, COALESCE(mobile, '07986 444 2266')
+FROM teacher
+  
+  -- print the teacher name and department name. Use the string 'None' where there is no department.
+  SELECT teacher.name, COALESCE(dept.name, 'None')
+FROM teacher LEFT JOIN dept ON (teacher.dept=dept.id)
+
+  --Show each department and the number of staff. 
+  --Use a RIGHT JOIN to ensure that the Engineering department is listed.
+  SELECT (dept.name), COUNT (teacher.name)
+FROM teacher 
+RIGHT JOIN dept ON (teacher.dept=dept.id)
+GROUP BY dept.name
+
+  --Show the name of each teacher followed by 'Sci' if the teacher is in dept 1 or 2 and 'Art' otherwise.
+  SELECT name, 
+CASE WHEN dept = 1 OR dept = 2  THEN 'Sci' ELSE 'Art' END
+FROM teacher 
+  
+--Show the name of each teacher followed by 'Sci' if the teacher is in dept 1 or 2, show 'Art' if the teacher's dept is 3 and 'None' otherwise.
+  SELECT name, 
+CASE
+ WHEN dept = 1 OR dept = 2  THEN 'Sci' 
+ WHEN dept = 3 THEN 'Art'
+ELSE 'None' END
+FROM teacher 
